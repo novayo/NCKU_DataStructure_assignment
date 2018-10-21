@@ -43,7 +43,7 @@ int main(int argc, char* argv[]){
 	}
 	print_arr(Question, Steps);
 
-	/*** Question 1 ***/
+	/*** Question 2 ***/
 	i=0;
 	Question = 2;
 	Steps = 0;
@@ -214,16 +214,3 @@ void print_arr(u Question, u Steps){
 	}	
 	return;	
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
