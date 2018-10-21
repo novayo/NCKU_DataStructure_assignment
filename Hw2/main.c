@@ -201,6 +201,7 @@ void print_arr(u Question, u Steps){
 	}
 	printf("Experiment %u:\n", Question);
 	printf("Total moves: %u\n", Steps);
+
 	// print out array
 	for(i=0; i<row; ++i){
 		for(j=0; j<col; ++j){
