@@ -60,7 +60,7 @@ int main(){
 		printf("%d ", tmp->data);
 		tmp = tmp->next;
 	}
-	printf("%d\n", tmp->next);
+	printf("%d\n", tmp->data);
 	return 0;
 }
 
@@ -90,12 +90,20 @@ deque* create(deque* node, char* str,int input){
 	} else if(!strcmp(str, "pop_back")){
 		while(tmp->next != NULL)
 			tmp = tmp->next;
+		if(tmp->pre == NULL){
+			tmp->data = -1;
+			return node;
+		}
 		tmp->pre->next = NULL;
 		tmp->pre = NULL;
 		free(tmp);
 	} else if(!strcmp(str, "pop_front")){
 		while(tmp->pre != NULL)
 			tmp = tmp->pre;
+		if(tmp->next == NULL){
+			tmp->data = -1;	
+			return node;
+		}
 		tmp->next->pre = NULL;
 		tmp->next = NULL;
 		free(tmp);
