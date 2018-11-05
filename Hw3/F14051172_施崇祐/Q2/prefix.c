@@ -3,12 +3,17 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
-#define MULTI -1
-#define DIVIDE -2
-#define PLUS -11
-#define MINUS -12
-#define LBRACKET 998
-#define RBRACKET 999
+#define MULTI -1     // *
+#define DIVIDE -2	 // /
+#define PERCENT -3	 // %
+#define PLUS -11	 // +
+#define MINUS -12	 // -
+#define AND -21		 // &
+#define XOR -31		 // ^
+#define OR -41		 // |
+#define COMMA -51	 // ,
+#define LBRACKET 998 // (
+#define RBRACKET 999 // )
 
 int main(){
 	while(1){
@@ -55,6 +60,16 @@ int main(){
 					symbol = LBRACKET;
 				} else if(input[len_input] == ')'){
 					symbol = RBRACKET;
+				} else if(input[len_input] == '%'){
+					symbol = PERCENT;
+				} else if(input[len_input] == '&'){
+					symbol = AND;
+				} else if(input[len_input] == '^'){
+					symbol = XOR;
+				} else if(input[len_input] == '|'){
+					symbol = OR;
+				} else if(input[len_input] == ','){
+					symbol = COMMA;
 				}
 
 				while(1){
@@ -63,14 +78,14 @@ int main(){
 						break;
 					}
 					if(symbol == LBRACKET){
-	top_stack_symbol--;
+						top_stack_symbol--;
 						if(stack_symbol[top_stack_symbol] == RBRACKET){
 							stack_symbol[top_stack_symbol] = -999;
 							break;
 						}
 						ans[top_ans++] = stack_symbol[top_stack_symbol];
 						stack_symbol[top_stack_symbol] = -999;
-					} else if(symbol == RBRACKET || symbol >= stack_symbol[top_stack_symbol-1] || (stack_symbol[top_stack_symbol-1] == RBRACKET) || abs(symbol-stack_symbol[top_stack_symbol-1]) == 1){
+					} else if(symbol == RBRACKET || symbol >= stack_symbol[top_stack_symbol-1] || (stack_symbol[top_stack_symbol-1] == RBRACKET) || abs(symbol-stack_symbol[top_stack_symbol-1]) < 10){
 						stack_symbol[top_stack_symbol++] = symbol;
 						break;
 					} else{
@@ -87,10 +102,15 @@ int main(){
 		while(1){
 			if(--top_ans == -1) break;
 			else if(ans[top_ans] >= 0) printf("%d", ans[top_ans]);
-			else if(ans[top_ans] == -1) printf("*");
-			else if(ans[top_ans] == -2) printf("/");
-			else if(ans[top_ans] == -11) printf("+");
-			else if(ans[top_ans] == -12) printf("-");
+			else if(ans[top_ans] == MULTI) printf("*");
+			else if(ans[top_ans] == DIVIDE) printf("/");
+			else if(ans[top_ans] == PLUS) printf("+");
+			else if(ans[top_ans] == MINUS) printf("-");
+			else if(ans[top_ans] == PERCENT) printf("%%");
+			else if(ans[top_ans] == AND) printf("&");
+			else if(ans[top_ans] == XOR) printf("^");
+			else if(ans[top_ans] == OR) printf("|");
+			else if(ans[top_ans] == COMMA) printf(",");
 		}
 		printf("\n");
 	}
