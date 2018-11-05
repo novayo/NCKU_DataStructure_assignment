@@ -70,7 +70,7 @@ int main(){
 						}
 						ans[top_ans++] = stack_symbol[top_stack_symbol];
 						stack_symbol[top_stack_symbol] = -999;
-					} else if(symbol == RBRACKET || symbol > stack_symbol[top_stack_symbol-1] || (stack_symbol[top_stack_symbol-1] == RBRACKET) || abs(symbol-stack_symbol[top_stack_symbol-1]) == 1){
+					} else if(symbol == RBRACKET || symbol >= stack_symbol[top_stack_symbol-1] || (stack_symbol[top_stack_symbol-1] == RBRACKET) || abs(symbol-stack_symbol[top_stack_symbol-1]) == 1){
 						stack_symbol[top_stack_symbol++] = symbol;
 						break;
 					} else{
