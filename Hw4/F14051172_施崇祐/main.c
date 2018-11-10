@@ -146,6 +146,7 @@ MatrixPointer mtranspose(int sn, int tn){
 	node->u.entry.row = NumCols; // transpose number of row
 	node->u.entry.col = NumRows; // transpose number of col
 
+	NumHeads = (NumCols > NumRows) ? NumCols : NumRows;
 	if (!NumHeads)
 		node->right = node;
 	else {
