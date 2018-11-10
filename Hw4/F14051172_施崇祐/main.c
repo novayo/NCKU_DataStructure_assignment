@@ -18,13 +18,13 @@ struct MatrixNode {
 		struct EntryNode entry;
 	} u;
 };
-MatrixPointer HdNode[MAX_SIZE];
-MatrixPointer tHdNode[MAX_SIZE];
+
+MatrixPointer HdNode[MAX_SIZE][MAX_SIZE];
 MatrixPointer mread(void);
 MatrixPointer mtranspose(void);
 void mwrite(MatrixPointer);
 void merase(MatrixPointer *node);
-int NumRows, NumCols,  NumEntries, NumHeads;
+int NumRows, NumCols,  NumEntries, NumHeads, Vars;
 
 int main()
 {
@@ -45,13 +45,11 @@ MatrixPointer mtranspose(void){
 	MatrixPointer node, temp, last, tmp;
 	int CurrentRow, row, col, value, i;
 
-	NumHeads = (NumCols > NumRows) ? NumCols : NumRows;
-
 	// set H
 	node = (MatrixPointer)malloc(sizeof(struct MatrixNode));
 	node->tag = entry;
-	node->u.entry.row = NumRows;
-	node->u.entry.col = NumCols;
+	node->u.entry.row = NumCols; // transpose number of row
+	node->u.entry.col = NumRows; // transpose number of col
 
 	if (!NumHeads)
 		node->right = node;
@@ -59,25 +57,28 @@ MatrixPointer mtranspose(void){
 		// set H0 ~ Hx
 		for (i = 0; i < NumHeads; i++) {
 			temp = (MatrixPointer)malloc(sizeof(struct MatrixNode));
-			tHdNode[i] = temp;
-			tHdNode[i]->tag = head;
-			tHdNode[i]->right = temp;
-			tHdNode[i]->u.next = temp;
+			HdNode[Vars][i] = temp;
+			HdNode[Vars][i]->tag = head;
+			HdNode[Vars][i]->right = temp;
+			HdNode[Vars][i]->u.next = temp;
 		}
 
+		NumHeads = (NumCols < NumRows) ? NumCols : NumRows;
 		// Start to store
 		CurrentRow = 0;
-		last = tHdNode[0];
+		last = HdNode[Vars][0];
 		for (i = 0; i < NumHeads; i++) {
-			for (tmp = HdNode[i]->right; tmp != HdNode[i]; tmp = tmp->right){
-				row = tmp->u.entry.row;
-				col = tmp->u.entry.col;
+// printf("i = %d\n", i);
+			for (tmp = HdNode[Vars-1][i]->down; tmp != HdNode[Vars-1][i]; tmp = tmp->down){
+				row = tmp->u.entry.col;
+				col = tmp->u.entry.row;
 				value = tmp->u.entry.value;
+// printf("Row = %d, Col = %d, Value = %d\n", row, col, value);
 				// if input to next row -> point back to HdNode
 				if (row > CurrentRow) {
-					last->right = tHdNode[CurrentRow]; 
+					last->right = HdNode[Vars][CurrentRow]; 
 					CurrentRow = row;
-					last = tHdNode[row];
+					last = HdNode[Vars][row];
 				}
 
 				// temp for input value
@@ -92,23 +93,24 @@ MatrixPointer mtranspose(void){
 				last = temp;
 
 				// add into col
-				tHdNode[col]->u.next->down = temp; 
-				tHdNode[col]->u.next = temp;
+				HdNode[Vars][col]->u.next->down = temp; 
+				HdNode[Vars][col]->u.next = temp;
 			}
 		}
 		// last point back to Hx
-		last->right = tHdNode[CurrentRow];
+		last->right = HdNode[Vars][CurrentRow];
 
 		// col point back to top
 		for (i = 0; i < NumCols; i++)
-			tHdNode[i]->u.next->down = tHdNode[i];
+			HdNode[Vars][i]->u.next->down = HdNode[Vars][i];
 
 		// row point to left
 		for (i = 0; i < NumHeads-1; i++)
-			tHdNode[i]->u.next = tHdNode[i+1];
-		tHdNode[NumHeads-1]->u.next = node;
-		node->right = tHdNode[0];
+			HdNode[Vars][i]->u.next = HdNode[Vars][i+1];
+		HdNode[Vars][NumHeads-1]->u.next = node;
+		node->right = HdNode[Vars][0];
 	}
+	Vars++;
 	return node;
 }
 
@@ -133,23 +135,23 @@ MatrixPointer mread(void){
 		// set H0 ~ Hx
 		for (i = 0; i < NumHeads; i++) {
 			temp = (MatrixPointer)malloc(sizeof(struct MatrixNode));
-			HdNode[i] = temp;
-			HdNode[i]->tag = head;
-			HdNode[i]->right = temp;
-			HdNode[i]->u.next = temp;
+			HdNode[Vars][i] = temp;
+			HdNode[Vars][i]->tag = head;
+			HdNode[Vars][i]->right = temp;
+			HdNode[Vars][i]->u.next = temp;
 		}
 
 		// Start to store
 		CurrentRow = 0;
-		last = HdNode[0];
+		last = HdNode[Vars][0];
 		for (i = 0; i < NumEntries; i++) {
 			printf("Enter {row column value}: ");
 			scanf("%d %d %d",&row,&col,&value);
 			// if input to next row -> point back to HdNode
 			if (row > CurrentRow) {
-				last->right = HdNode[CurrentRow]; 
+				last->right = HdNode[Vars][CurrentRow]; 
 				CurrentRow = row;
-				last = HdNode[row];
+				last = HdNode[Vars][row];
 			}
 
 			// temp for input value
@@ -164,34 +166,34 @@ MatrixPointer mread(void){
 			last = temp;
 
 			// add into col
-			HdNode[col]->u.next->down = temp; 
-			HdNode[col]->u.next = temp;
+			HdNode[Vars][col]->u.next->down = temp; 
+			HdNode[Vars][col]->u.next = temp;
 		}
 		// last point back to Hx
-		last->right = HdNode[CurrentRow];
+		last->right = HdNode[Vars][CurrentRow];
 
 		// col point back to top
 		for (i = 0; i < NumCols; i++)
-			HdNode[i]->u.next->down = HdNode[i];
+			HdNode[Vars][i]->u.next->down = HdNode[Vars][i];
 
 		// row point to left
 		for (i = 0; i < NumHeads-1; i++)
-			HdNode[i]->u.next = HdNode[i+1];
-		HdNode[NumHeads-1]->u.next =  node;
-		node->right = HdNode[0];
+			HdNode[Vars][i]->u.next = HdNode[Vars][i+1];
+		HdNode[Vars][NumHeads-1]->u.next = node;
+		node->right = HdNode[Vars][0];
 	}
+	Vars++;
 	return node;
 }	
 
 
-void mwrite(MatrixPointer node)
-{
+void mwrite(MatrixPointer node){
 	int i, zero;
 	MatrixPointer temp;
 	printf("Matrix: \n");
 	for (i = 0; i < node->u.entry.row; i++){
 		zero = 0;
-		for (temp = HdNode[i]->right; temp != HdNode[i]; temp = temp->right){
+		for (temp = HdNode[Vars-1][i]->right; temp != HdNode[Vars-1][i]; temp = temp->right){
 			while(zero++ < temp->u.entry.col) printf("  0");
 			printf("%3d", temp->u.entry.value);
 		}
@@ -200,21 +202,21 @@ void mwrite(MatrixPointer node)
 	}
 }
 
-void merase(MatrixPointer *node)
-{
-	MatrixPointer x,y;
+void merase(MatrixPointer *node){
 	int i, NumHeads;
+	Vars--;
+	MatrixPointer x,y;
 	for (i = 0; i < (*node)->u.entry.row; i++) {
-		y = HdNode[i]->right;
-		while (y != HdNode[i]) {
+		y = HdNode[Vars][i]->right;
+		while (y != HdNode[Vars][i]) {
 			x = y;
 			y = y->right;
 			free(x);
 		}
 	}
-	NumHeads = ((*node)->u.entry.row > (*node)->u.entry.col) ?
-		(*node)->u.entry.row : (*node)->u.entry.col;
+	NumHeads = ((*node)->u.entry.row > (*node)->u.entry.col) ? (*node)->u.entry.row : (*node)->u.entry.col;
 	for (i = 0; i < NumHeads; i++)
-		free(HdNode[i]);
+		free(HdNode[Vars][i]);
+
 	*node = NULL;
 }
